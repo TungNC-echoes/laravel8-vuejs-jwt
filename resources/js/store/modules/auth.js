@@ -27,6 +27,9 @@ export default {
         }
     },
     mutations: {
+        REMEMBER_ME (state, param){
+            state.rememberMe = param;
+        },
         LOGIN: state => {
             state.loading = true;
             state.authError = null;
@@ -36,8 +39,7 @@ export default {
             state.isLoggedIn = true;
             state.loading = false;
             state.currentUser = Object.assign({}, payload.user, {token: payload.access_token});
-
-            localStorage.setItem('user', JSON.stringify(state.currentUser));
+            state.rememberMe ? localStorage.setItem('user', JSON.stringify(state.currentUser)) : sessionStorage.setItem('user', JSON.stringify(state.currentUser));
         },
         LOGIN_FAILED: (state, payload) => {
             state.authError = payload.err;
@@ -45,6 +47,7 @@ export default {
         },
         LOGOUT: (state) => {
             localStorage.removeItem('user');
+            sessionStorage.removeItem('user');
             state.isLoggedIn = false;
             state.currentUser = null;
         },

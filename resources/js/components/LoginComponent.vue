@@ -1,7 +1,9 @@
 <template>
     <div class="login">
         <el-card>
-            <h2>Login</h2>
+            <img src="images/logo_atb_red-wht.png" alt="" class="logo">
+            <h4>Welcome to Allied Tech Base!</h4>
+            <div class="sign-in">Please sign-in to your account and start the adventure</div>
             <el-form
                 class="login-form"
                 :model="model"
@@ -9,10 +11,10 @@
                 ref="form"
                 @submit.native.prevent="authenticate"
             >
-                <el-form-item prop="email">
+                <el-form-item prop="email" label="Email">
                     <el-input v-model="model.email" placeholder="Email"></el-input>
                 </el-form-item>
-                <el-form-item prop="password">
+                <el-form-item prop="password" label="Password">
                     <el-input
                         v-model="model.password"
                         placeholder="Password"
@@ -21,7 +23,7 @@
                         <el-button slot="append" :icon="showPassword ? 'el-icon-unlock' : 'el-icon-lock'" @click="showPassword = !showPassword"></el-button>
                     </el-input>
                 </el-form-item>
-                <el-checkbox v-model="rememberMe" >Remember Me</el-checkbox>
+                <el-checkbox v-model="remember" @change="rememberChange">Remember Me</el-checkbox>
                 <el-form-item>
                     <el-button
                         :loading="loading"
@@ -31,7 +33,6 @@
                         block
                     >Login</el-button>
                 </el-form-item>
-                <a class="forgot-password" href="#">Forgot password ?</a>
             </el-form>
         </el-card>
     </div>
@@ -54,6 +55,7 @@
                             message: "Email is required",
                             trigger: "blur"
                         },
+                        { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] }
                     ],
                     password: [
                         { required: true, message: "Password is required", trigger: "blur" },
@@ -69,16 +71,25 @@
                     password: ""
                 },
                 loading: false,
-                rememberMe: false,
+                remember: false,
                 showPassword: false
             };
         },
         computed: {
             authError() {
                 return this.$store.getters.AUTH_ERROR;
+            },
+            rememberMe() {
+                return this.$store.getters.REMEMBER_ME;
             }
         },
+        created() {
+            this.rememberChange();
+        },
         methods: {
+            rememberChange() {
+                this.$store.commit('REMEMBER_ME', this.remember)
+            },
             authenticate() {
                 this.$store.dispatch("LOGIN");
                 login(this.$data.model)
@@ -109,11 +120,17 @@
 </script>
 
 <style scoped lang="scss">
+    .logo {
+        width: 10vw;
+    }
     .login {
         flex: 1;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+    .sign-in {
+        padding: 15px 0;
     }
     ::v-deep .el-checkbox {
         float: left;

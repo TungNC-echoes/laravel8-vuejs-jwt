@@ -1,99 +1,145 @@
 <template>
-    <div>
-        <div>
-            <el-row class="header">
-                <el-col :span="18" class="float-left logo">
-                </el-col>
-                <el-col :span="6" class="float-right">
-                    <div class="display-flex header-action">
-                        <div class="el-icon-message-solid notice"></div>
-                        <el-dropdown>
-                            <div class="el-dropdown-link">
-                                <div>
-                                    Function<i class="el-icon-arrow-down el-icon--right"></i>
-                                </div>
-                            </div>
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item>User Info</el-dropdown-item>
-                                <el-dropdown-item><el-button @click="logout">Logout</el-button></el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
+    <el-container class="container">
+        <HeaderComponent></HeaderComponent>
+        <el-main class="main">
+            <div class="account display-flex">
+                <el-button type="primary" icon="el-icon-user-solid">Account</el-button>
+                <div @click="$router.push({path: '/information'})" class="information el-icon-warning-outline">Information</div>
+            </div>
+            <div class="avatar-update display-flex">
+                <img src="images/avatar.png" alt="" class="avatar">
+                <div class="user-name">
+                    <h3>TungNC</h3>
+                    <el-button type="primary">Update</el-button>
+                    <el-button>Remove</el-button>
+                </div>
+            </div>
+            <el-form :model="dataUser" ref="dataUser" label-width="120px" class="demo-dynamic">
+                <el-row>
+                    <el-col :span="8">
+                        <el-form-item prop="user_name" label="Username" :rules="[{ required: true, message: 'Please input user name', trigger: 'blur' }]">
+                            <el-input v-model="dataUser.user_name" placeholder="Username"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item prop="name" label="Name" :rules="[{ required: true, message: 'Please input name', trigger: 'blur' }]">
+                            <el-input v-model="dataUser.name" placeholder="Name"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item prop="email" label="Email">
+                            <el-input v-model="dataUser.email" placeholder="Email" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="8">
+                        <el-form-item prop="status" label="Status">
+                            <el-select v-model="dataUser.status" placeholder="Select">
+                                <el-option
+                                    v-for="item in states"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item prop="status" label="Status">
+                            <el-select v-model="dataUser.role" placeholder="Select">
+                                <el-option
+                                    v-for="item in roles"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-form-item prop="company" label="Company">
+                            <el-input v-model="dataUser.company" placeholder="Company"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('dataUser')">Save Changes</el-button>
+                    <el-button @click="resetForm()">Reset</el-button>
+                </el-form-item>
+            </el-form>
+        </el-main>
 
-                    </div>
-                </el-col>
-            </el-row>
-        </div>
-        <h3 class="text-center">Edit User</h3>
-        <el-form ref="form" :model="form" label-width="120px">
-            <el-form-item label="Activity name">
-                <el-input v-model="form.name"></el-input>
-            </el-form-item>
-            <el-form-item label="Activity zone">
-                <el-select v-model="form.region" placeholder="please select your zone">
-                    <el-option label="Zone one" value="shanghai"></el-option>
-                    <el-option label="Zone two" value="beijing"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="Activity time">
-                <el-col :span="11">
-                    <el-date-picker type="date" placeholder="Pick a date" v-model="form.date1" style="width: 100%;"></el-date-picker>
-                </el-col>
-                <el-col class="line" :span="2">-</el-col>
-                <el-col :span="11">
-                    <el-time-picker placeholder="Pick a time" v-model="form.date2" style="width: 100%;"></el-time-picker>
-                </el-col>
-            </el-form-item>
-            <el-form-item label="Instant delivery">
-                <el-switch v-model="form.delivery"></el-switch>
-            </el-form-item>
-            <el-form-item label="Activity type">
-                <el-checkbox-group v-model="form.type">
-                    <el-checkbox label="Online activities" name="type"></el-checkbox>
-                    <el-checkbox label="Promotion activities" name="type"></el-checkbox>
-                    <el-checkbox label="Offline activities" name="type"></el-checkbox>
-                    <el-checkbox label="Simple brand exposure" name="type"></el-checkbox>
-                </el-checkbox-group>
-            </el-form-item>
-            <el-form-item label="Resources">
-                <el-radio-group v-model="form.resource">
-                    <el-radio label="Sponsor"></el-radio>
-                    <el-radio label="Venue"></el-radio>
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item label="Activity form">
-                <el-input type="textarea" v-model="form.desc"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="updateUser">Create</el-button>
-                <el-button @click="resetData">Reset</el-button>
-            </el-form-item>
-        </el-form>
-    </div>
+    </el-container>
 </template>
 
 <script>
     import { currentUser } from "../../js/helpers/auth";
     import { logout } from '../../js/helpers/auth';
+    import HeaderComponent from "./HeaderComponent";
     export default {
         name: "user-profile",
+        components: {HeaderComponent},
         data() {
             return {
-                form: {
-                    name: '',
-                    region: '',
-                    date1: '',
-                    date2: '',
-                    delivery: false,
-                    type: [],
-                    resource: '',
-                    desc: ''
+                originDataUser: {
+                    user_name: 'TungNC',
+                    name: 'Tung',
+                    email: 'bkaprodx@gmail.com',
+                    status: '1',
+                    role:'1',
+                    company: 'Allied Tech Base'
                 },
-                user: currentUser()
+                dataUser: null,
+                user: currentUser(),
+                states: [{
+                    value: '1',
+                    label: 'Pending'
+                }, {
+                    value: '2',
+                    label: 'Active'
+                }, {
+                    value: '3',
+                    label: 'Inactive'
+                }],
+                roles: [{
+                    value: '1',
+                    label: 'Admin'
+                }, {
+                    value: '2',
+                    label: 'Author'
+                }, {
+                    value: '3',
+                    label: 'Editor'
+                }, {
+                    value: '4',
+                    label: 'Maintainer'
+                }, {
+                    value: '5',
+                    label: 'Subscriber'
+                }]
             }
         },
         created() {
+            this.dataUser = JSON.parse(JSON.stringify(this.originDataUser))
         },
         methods: {
+            submitForm(dataUser) {
+                this.$refs[dataUser].validate((valid) => {
+                    if (valid) {
+                        this.$message({
+                            message: 'Submit Success!',
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message({
+                            message: 'Something went wrong!',
+                            type: 'error'
+                        });
+                        return false;
+                    }
+                });
+            },
             updateUser() {
                 this.axios
                     .patch(`http://localhost:8000/api/auth/user-update/${this.user.id}`, this.user)
@@ -107,55 +153,38 @@
             logout() {
                 logout();
             },
-            resetData() {
-                this.user = localStorage.getItem('user');
-            }
+            resetForm() {
+                this.dataUser = JSON.parse(JSON.stringify(this.originDataUser))
+            },
         }
     }
 </script>
 <style scoped>
-    .header {
-        width: 100%;
-        padding: 15px 30px;
-        display: block;
+    .display-flex {
+        display: flex;
     }
-    .header-action {
-    }
-
-    .header .notice {
-        padding: 12px 25px;
-    }
-
-    .header .setting {
-        width: 98px;
-        height: 40px;
-        border-radius: 8px;
-        color: #4f4f4f;
-        margin-right: 10px;
-        border: 1px solid #dfe0eb;
-    }
-
-    .header .print {
-        width: 120px;
-        height: 40px;
-        border-radius: 8px;
-        color: #4f4f4f;
-        margin-right: 20px;
-        border: 1px solid #dfe0eb;
-    }
-    .el-dropdown {
-        width: 140px;
-        height: 40px;
-        border-radius: 8px;
-        border: 1px solid #dfe0eb;
-    }
-    .el-dropdown-link {
+    .information {
+        padding: 13px;
         cursor: pointer;
     }
-    .el-icon-arrow-down {
-        font-size: 12px;
+    .account {
+        padding: 20px;
     }
-    .el-dropdown-link {
-        padding: 10px;
+    .avatar {
+        width: 5vw;
+        height: 5vw;
+        margin: 20px
+    }
+    .user-name {
+        padding: 20px;
+    }
+    .main {
+        margin: 30px;
+        margin-top: 50px;
+        background: #ffffff;
+        border-radius: 10px;
+    }
+    .container {
+        display: contents !important;
     }
 </style>

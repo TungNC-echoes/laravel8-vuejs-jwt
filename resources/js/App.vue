@@ -20,7 +20,7 @@
         text-align: left;
         color: #4f4f4f;
         font-size: 14px;
-        background-color: #f5f7fa;
+        background-color: #f8f8f8;
         margin: 0;
         display: flex;
         flex-direction: column;

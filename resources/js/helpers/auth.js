@@ -48,7 +48,7 @@ export function update(credential) {
 }
 
 export function currentUser() {
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem('user') ? localStorage.getItem('user') : sessionStorage.getItem('user');
 
     if (!user) {
         return null;
