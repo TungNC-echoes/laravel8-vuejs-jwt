@@ -14,6 +14,8 @@ import VueRouter from 'vue-router';
 import axios from 'axios';
 import { routes } from './routes';
 import Element from 'element-ui'
+import store from './store/index';
+import { initialize } from "./helpers/general";
 import 'element-ui/lib/theme-chalk/index.css';
 
 /**
@@ -31,8 +33,11 @@ const router = new VueRouter({
     routes: routes
 });
 
+initialize(store, router);
+
 const app = new Vue({
     el: '#app',
     router: router,
+    store,
     render: h => h(App),
 });

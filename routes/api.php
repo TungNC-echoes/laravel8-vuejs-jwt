@@ -26,5 +26,7 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/user-profile', [UserController::class, 'userProfile']);
-    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/user-update/{$id}', [UserController::class, 'userUpdate']);
+//    Route::resource('users', UserController::class);
+//    Route::get('/users', [UserController::class, 'index']);
 });

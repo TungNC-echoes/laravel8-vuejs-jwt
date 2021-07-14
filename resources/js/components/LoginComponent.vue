@@ -7,7 +7,7 @@
                 :model="model"
                 :rules="rules"
                 ref="form"
-                @submit.native.prevent="login"
+                @submit.native.prevent="authenticate"
             >
                 <el-form-item prop="email">
                     <el-input v-model="model.email" placeholder="Email"></el-input>
@@ -17,10 +17,10 @@
                         v-model="model.password"
                         placeholder="Password"
                         :type="showPassword ? 'text' : 'password'"
-                        suffix-icon="el-icon-view"
-                    ></el-input>
+                    >
+                        <el-button slot="append" :icon="showPassword ? 'el-icon-unlock' : 'el-icon-lock'" @click="showPassword = !showPassword"></el-button>
+                    </el-input>
                 </el-form-item>
-                <el-checkbox v-model="showPassword" >Show Password</el-checkbox>
                 <el-checkbox v-model="rememberMe" >Remember Me</el-checkbox>
                 <el-form-item>
                     <el-button
@@ -38,6 +38,7 @@
 </template>
 
 <script>
+    import { login } from '../../js/helpers/auth';
     export default {
         name: "login",
         data() {
@@ -72,35 +73,42 @@
                 showPassword: false
             };
         },
+        computed: {
+            authError() {
+                return this.$store.getters.AUTH_ERROR;
+            }
+        },
         methods: {
+            authenticate() {
+                this.$store.dispatch("LOGIN");
+                login(this.$data.model)
+                    .then(res => {
+                        this.$store.commit("LOGIN_SUCCESS", res);
+                        this.$router.push({path: '/user-profile'});
+                        this.$message({
+                            message: 'You are login',
+                            type: 'success'
+                        });
+
+                    })
+                    .catch(err => {
+                        this.$store.commit("LOGIN_FAILED", {err})
+                        this.$message({
+                            message: 'You must fill correct email and password!',
+                            type: 'error'
+                        });
+                    })
+            },
             simulateLogin() {
                 return new Promise(resolve => {
                     setTimeout(resolve, 800);
                 });
             },
-            async login() {
-                let valid = await this.$refs.form.validate();
-                if (!valid) {
-                    return;
-                }
-                this.loading = true;
-                await this.simulateLogin();
-                this.loading = false;
-                if (
-                    this.model.email === this.validCredentials.email &&
-                    this.model.password === this.validCredentials.password
-                ) {
-                    this.$message.success("Login successfull");
-                } else {
-                    this.$message.error("Email or password is invalid");
-                }
-            }
         }
     };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
     .login {
         flex: 1;
         display: flex;
@@ -120,34 +128,6 @@
     .forgot-password {
         margin-top: 10px;
     }
-</style>
-<style lang="scss">
-    $teal: rgb(0, 124, 137);
-    .el-button--primary {
-        background: $teal;
-        border-color: $teal;
-
-        &:hover,
-        &.active,
-        &:focus {
-            background: lighten($teal, 7);
-            border-color: lighten($teal, 7);
-        }
-    }
-    .login .el-input__inner:hover {
-        border-color: $teal;
-    }
-    .login .el-input__prefix {
-        background: rgb(238, 237, 234);
-        left: 0;
-        height: calc(100% - 2px);
-        left: 1px;
-        top: 1px;
-        border-radius: 3px;
-        .el-input__icon {
-            width: 30px;
-        }
-    }
     .login .el-input input {
         padding-left: 35px;
     }
@@ -160,15 +140,6 @@
         letter-spacing: 1px;
         font-family: Roboto, sans-serif;
         padding-bottom: 20px;
-    }
-    a {
-        color: $teal;
-        text-decoration: none;
-        &:hover,
-        &:active,
-        &:focus {
-            color: lighten($teal, 7);
-        }
     }
     .login .el-card {
         width: 340px;

@@ -14,6 +14,13 @@ class UserController extends Controller
         return response()->json($users, 200);
     }
     public function userProfile() {
+        dd(auth()->user());
         return response()->json(auth()->user());
+    }
+    public function userUpdate($id, Request $request) {
+        $user = User::find($id);
+        dd($request);
+        $user->update($request->all());
+        return response()->json('User updated!');
     }
 }
